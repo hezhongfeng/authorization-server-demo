@@ -1,0 +1,29 @@
+server:
+  port: 9000
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/auth-he?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf-8 # 指定北京时间
+    username: root
+    password: Xy&278721524
+    driver-class-name: com.mysql.cj.jdbc.Driver # 数据库驱动
+  jpa:
+    open-in-view: false
+    database: mysql
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  sql:
+    init:
+      platform: mysql
+      username: root
+      password: Xy&278721524
+      data-locations: classpath:data.sql
+      mode: always
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.security.oauth2: DEBUG
