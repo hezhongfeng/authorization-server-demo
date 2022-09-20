@@ -24,10 +24,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
+import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.config.ProviderSettings;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 /**
  * @author Joe Grandja
@@ -40,13 +41,18 @@ public class AuthorizationServerConfig {
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http)
 			throws Exception {
-		OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
-		// @formatter:off
-		http
-			.exceptionHandling(exceptions ->
-				exceptions.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
-			);
-		// @formatter:on
+		OAuth2AuthorizationServerConfigurer<HttpSecurity> authorizationServerConfigurer =	new OAuth2AuthorizationServerConfigurer<>();
+		// authorizationServerConfigurer.authorizationEndpoint(
+		// 		authorizationEndpoint -> authorizationEndpoint.consentPage(CUSTOM_CONSENT_PAGE_URI));
+
+		RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
+
+		http.requestMatcher(endpointsMatcher)
+				.authorizeRequests(authorizeRequests -> authorizeRequests.anyRequest().authenticated())
+				.csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
+				.exceptionHandling(exceptions -> exceptions
+						.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")))
+				.apply(authorizationServerConfigurer);
 		return http.build();
 	}
 
