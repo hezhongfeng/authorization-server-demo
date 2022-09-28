@@ -13,13 +13,6 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
-  sql:
-    init:
-      platform: mysql
-      username: root
-      password: Xy&278721524
-      data-locations: classpath:data.sql
-      mode: always
 
 logging:
   level:
